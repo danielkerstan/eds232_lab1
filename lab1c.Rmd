@@ -1,0 +1,13 @@
+---
+title: "lab1c"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#librarian::lib_paths("/Users/bbest/R/x86_64-pc-linux-gnu-library/4.0")
+```
+
