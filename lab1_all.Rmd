@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       message = FALSE)
 ```
 
-#1a
+# 1a Species Distribution Modeling- Exploratory Data Analysis
 ## Install packages
 ```{r}
 # load packages, installing if missing
@@ -29,6 +29,10 @@ dir_data <- here("data/sdm")
 dir.create(dir_data, showWarnings = F)
 ```
 ## Get species observations
+
+![American Black Bear](images/blackbear.jpg)
+
+### Ursus americanus (American Black Bear)
 ```{r}
 obs_csv <- file.path(dir_data, "obs.csv")
 obs_geo <- file.path(dir_data, "obs.geojson")
@@ -70,8 +74,11 @@ nrow(obs) # number of rows
 # show points on map
 mapview::mapview(obs, map.types = "Esri.WorldImagery")
 ```
+
+### **Question: How many observations total are in GBIF for your species?**
 ### There are `r length(res_large_limit$gbif$data$Ursus_americanus$name)` total observations in GBIF for my species.
-### I do not see any odd observations in the data
+### **Question: Did you have to perform any data cleaning steps?**
+### I do not see any odd observations in the data. The cleaning I had to do was minimal, and consisted only of filtering the basis of record to "HUMAN_OBSERVATION"
 
 ## Get environmental data
 ```{r}
@@ -84,9 +91,9 @@ options(sdmpredictors_datadir = dir_env)
 env_datasets <- sdmpredictors::list_datasets(terrestrial = TRUE, marine = FALSE)
 
 # show table of datasets
-env_datasets %>% 
-  select(dataset_code, description, citation) %>% 
-  DT::datatable()
+#env_datasets %>% 
+ # select(dataset_code, description, citation) %>% 
+  #DT::datatable()
 ```
 
 ```{r}
@@ -95,8 +102,11 @@ env_datasets_vec <- c("WorldClim", "ENVIREM")
 
 # get layers
 env_layers <- sdmpredictors::list_layers(env_datasets_vec)
-DT::datatable(env_layers)
+#DT::datatable(env_layers)
 ```
+
+### **Question: What environmental layers did you choose as predictors? Can you find any support for these in the literature?**
+### The layers I chose as predictors are WC_alt (altitude), WC_bio1 (annual mean temperature), WC_bio11 (mean temperature of coldest quarter), WC_bio10 (mean temperature of warmest quarter), WC_bio4 (temperature seasonality), ER_tri (terrain roughness index), ER_topoWet (topographic wetness), WC_bio12 (annual precipitation), WC_bio7 (annual temperature range), latitude, and longitude. Since my prior knowledge of black bear habitat is limited and comes mostly from common knowledge, I decided to choose a wide range of environmental factors as possible predictors.
 
 ```{r}
 # choose layers after some inspection and perhaps consulting literature
@@ -246,7 +256,7 @@ pts_env %>%
 
 
 
-#1b
+# 1b. Logistic Regression
 
 
 ```{r}
@@ -338,6 +348,12 @@ plot(mdl, scale=0)
 
 ```
 
+
+### **Question: Which GAM environmental variables, and even range of values, seem to contribute most towards presence (above 0 response) versus absence (below 0 response)?**  
+
+### The variables with the highest Chi.sq values were latitude, WC_bio12 (annual precipitation), and WC_bio1 (annual mean temp) with Chi.sq values of 565.08, 418.41, and 373.07 respectively. 
+
+
 ## Maxent
 
 
@@ -383,6 +399,10 @@ plot(mdl)
 response(mdl)
 ```
 
+### **Question: Which Maxent environmental variables, and even range of values, seem to contribute most towards presence (closer to 1 response) and how might this differ from the GAM results?**
+
+# NEED ANSWER HERE
+
 ```{r}
 # predict
 y_predict <- predict(env_stack, mdl) #, ext=ext, progress='')
@@ -394,7 +414,7 @@ plot(wrld_simpl, add=TRUE, border='dark grey')
 ```
 
 
-#1c
+# 1c. Decision Trees
 
 
 ```{r}
@@ -480,16 +500,24 @@ mdl
 rpart.plot(mdl)
 
 ```
+
 ```{r}
 # plot complexity parameter
 plotcp(mdl)
 
 ```
+
+### **Question: Based on the complexity plot threshold, what size of tree is recommended?**
+# NEED ANSWER HERE
+
+
 ```{r}
 # rpart cross validation results
 mdl$cptable
 
 ```
+
+
 
 ### Feature interpretation
 
@@ -509,6 +537,11 @@ ggplot(mdl_caret)
 ```{r}
 vip(mdl_caret, num_features = 40, bar = FALSE)
 ```
+
+
+### **Question: what are the top 3 most important variables of your model?**
+### The 3 most important variables of the model are WC_bio11 (mean temperature of coldest quarter), WC_bio4 (temperature seasonality), and latitude. 
+
 
 ```{r}
 # Construct partial dependence plots
@@ -554,9 +587,10 @@ p2 <- vip::vip(mdl_permutation, bar = FALSE)
 
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
+### **Question: How might variable importance differ between rpart and RandomForest in your model outputs?**
+# NEED ANSWER HERE
 
-
-1D
+# 1d. Evaluate Models
 
 ```{r}
 # load packages
@@ -610,6 +644,7 @@ pts_train_a <- pts_train %>%
 # show pairs plot before multicollinearity reduction with vifcor()
 pairs(env_stack)
 ```
+
 ```{r}
 # calculate variance inflation factor per predictor, a metric of multicollinearity between variables
 vif(env_stack)
@@ -639,6 +674,11 @@ mdl_maxv <- read_rds(mdl_maxv_rds)
 # plot variable contributions per predictor
 plot(mdl_maxv)
 ```
+
+
+### **Question: Which variables were removed due to multicollinearity and what is the rank of most to least important remaining variables in your model?**
+### The variable removed included WC_bio11 (mean temperature of coldest quarter), WC_bio4 (temperature seasonality), WC_bio1 (annual mean temperature), and ER_topoWet (topographic wetness). The remaining variables in the order of most to least important are ER_tri (terrain roughness index), WC_bio12 (annual precipitation), WC_bio10 (mean temperature of warmest quarter), WC_bio7 (annual temperature range), and WC_alt (altitude). 
+
 
 ```{r}
 # plot term plots
