@@ -1,5 +1,5 @@
 ---
-title: "lab1_together"
+title: "lab1"
 output: html_document
 ---
 
@@ -351,8 +351,7 @@ plot(mdl, scale=0)
 
 ### **Question: Which GAM environmental variables, and even range of values, seem to contribute most towards presence (above 0 response) versus absence (below 0 response)?**  
 
-### The variables with the highest Chi.sq values were latitude, WC_bio12 (annual precipitation), and WC_bio1 (annual mean temp) with Chi.sq values of 565.08, 418.41, and 373.07 respectively. 
-
+### The variables with the greatest range of values were WC_bio1 and WC_bio10 contributing greately to both presence and absence. WC_bio1 had values from -60 to 30 and WC_bio10 had values between -40 and 50. 
 
 ## Maxent
 
@@ -401,7 +400,7 @@ response(mdl)
 
 ### **Question: Which Maxent environmental variables, and even range of values, seem to contribute most towards presence (closer to 1 response) and how might this differ from the GAM results?**
 
-# NEED ANSWER HERE
+### The variables that seem to contribute most towards presence in the maxent model are WC_alt (altitude), WC_bio1 (annual mean temperature), WC_bio11 (mean temperature of coldest quarter), and WC_bio7 (annual temperature range) compared to the GAM model which determined WC_bio1 (annual mean temperature) and WC_bio10 (mean temperature of warmest quarter) to contribute the most.
 
 ```{r}
 # predict
@@ -508,7 +507,7 @@ plotcp(mdl)
 ```
 
 ### **Question: Based on the complexity plot threshold, what size of tree is recommended?**
-# NEED ANSWER HERE
+### Based on the complexity plot threshold, the size of the tree is recommended to be 8.
 
 
 ```{r}
@@ -555,6 +554,8 @@ p3 <- partial(mdl_caret, pred.var = c("lat", "WC_bio11")) %>%
 gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
 
 ```
+
+
 ## Random Forests
 
 ### Fit
@@ -587,8 +588,9 @@ p2 <- vip::vip(mdl_permutation, bar = FALSE)
 
 gridExtra::grid.arrange(p1, p2, nrow = 1)
 ```
+
 ### **Question: How might variable importance differ between rpart and RandomForest in your model outputs?**
-# NEED ANSWER HERE
+### Variable importance could be calculated differently with different methods leading to different predictions.
 
 # 1d. Evaluate Models
 
@@ -677,7 +679,7 @@ plot(mdl_maxv)
 
 
 ### **Question: Which variables were removed due to multicollinearity and what is the rank of most to least important remaining variables in your model?**
-### The variable removed included WC_bio11 (mean temperature of coldest quarter), WC_bio4 (temperature seasonality), WC_bio1 (annual mean temperature), and ER_topoWet (topographic wetness). The remaining variables in the order of most to least important are ER_tri (terrain roughness index), WC_bio12 (annual precipitation), WC_bio10 (mean temperature of warmest quarter), WC_bio7 (annual temperature range), and WC_alt (altitude). 
+### The variables removed include WC_bio11 (mean temperature of coldest quarter), WC_bio4 (temperature seasonality), WC_bio1 (annual mean temperature), and ER_topoWet (topographic wetness). The remaining variables in the order of most to least important are ER_tri (terrain roughness index), WC_bio12 (annual precipitation), WC_bio10 (mean temperature of warmest quarter), WC_bio7 (annual temperature range), and WC_alt (altitude). 
 
 
 ```{r}
